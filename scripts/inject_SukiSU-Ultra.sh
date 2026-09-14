@@ -103,6 +103,16 @@ else
     echo "  -> Kernel $K_VER.$K_PATCH detected. Legacy LSM string hook is perfectly valid."
 fi
 
+# ---------------------------------------------------------
+# SukiSU-Ultra Linker Bug Fix: fs/exec.c sucompat
+# ---------------------------------------------------------
+EXEC_FILE="common/fs/exec.c"
+if [ -f "$EXEC_FILE" ] && grep -q 'ksu_handle_post_execveat_sucompat' "$EXEC_FILE"; then
+    echo ">>> Fixing SukiSU-Ultra linker error: removing undefined sucompat hook..."
+    # Surgically delete the dead function call injected by setup.sh
+    sed -i '/ksu_handle_post_execveat_sucompat/d' "$EXEC_FILE"
+fi
+
 echo "  -> Target Tag: $CALCULATED_TAG"
 echo "  -> Target Hash: $UPSTREAM_HASH"
 echo "  -> Target Count: $CALCULATED_COUNT"
